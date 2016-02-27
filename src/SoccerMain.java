@@ -2,7 +2,6 @@
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
-
 import java.io.File;
 import java.util.List;
 import java.util.Scanner;
@@ -17,36 +16,22 @@ public class SoccerMain {
 
         ObjectContainer db = null;
         try {
-            //db = Db4o.openFile("persons.data"); //deprecated
-            //db = Db4oEmbedded.OpenFile(Db4oEmbedded.NewConfiguration(), YapFileName);
-
-            /*
-            Person brian = new Person("Brian", "Goetz", 39);
-            db.store(brian);
-            db.commit();
-            // Find all the Brians
-            ObjectSet objBrian = db.queryByExample(new Person("Brian", null, 0));
-
-            while (objBrian.hasNext())
-                System.out.println(objBrian.next());
-             */
-
-            //db = Db4oEmbedded.openFile("soccerData.db");
 
             db = DataConnection.getInstance();
             String menu = "";
             boolean on = true;//condicio de sortida del programa
 
-            ////////////////////////////////////////////////////////////////////////////////
+            //Se crean los siguientes datos predefinidos para almacenarlos en la bbdd
 
             File file = new File("soccerData.db");
-            //System.out.println(file.length());
+
+            //Los siguientes datos solo se crearan una vez
             if(file.length() < 1500){
                 //public Jugador(String dni, String nombre, String apellido, double altura)
                 Jugador jugador1 = new Jugador("12345678Q", "Primero", "Apellido1", 2000);
                 Jugador jugador2 = new Jugador("87654321A", "Segundo", "Apellido2", 1950);
                 Jugador jugador3 = new Jugador("3333333", "Tercero", "Apellido3", 1833);
-                Jugador jugador4 = new Jugador("4444444", "Cuarto", "Apellido4", 1944);
+                Jugador jugador4 = new Jugador("444444444", "Cuarto", "Apellido4", 1944);
                 Jugador jugador5 = new Jugador("555555555", "Quinto", "Apellido5", 1955);
 
 
@@ -64,15 +49,14 @@ public class SoccerMain {
 
                 //-----------------------------------------------------------
 
+                jugador1.getCaracteristicas().setFuerza(6);
                 equipo1.addJugador(jugador1);
                 jugador2.getCaracteristicas().setFuerza(6);
                 equipo1.addJugador(jugador2);
+                //jugador3.getCaracteristicas().setFuerza(6);
                 equipo1.addJugador(jugador3);
                 equipo2.addJugador(jugador4);
                 equipo2.addJugador(jugador5);
-
-                //db.store(equipo1);
-                //db.store(equipo2);
 
                 liga1.addEquipo(equipo1);
                 liga1.addEquipo(equipo2);
@@ -92,6 +76,7 @@ public class SoccerMain {
                 System.out.println("5--> Características de un jugador dado");
                 System.out.println("6--> Jugadores que pertenece a un entrenador dado");
                 System.out.println("7--> Equipos de una liga en concreta");
+                System.out.println("8--> Crear jugadores");
                 System.out.println("0--> Salir del programa");
                 System.out.println(" ");
                 menu = input.nextLine();
@@ -99,6 +84,7 @@ public class SoccerMain {
                 switch (menu) {
                     case "0": {
                         System.out.println("\n...salir");
+                        //db.close();
                         on = false;
                         break;
                     }
@@ -165,9 +151,20 @@ public class SoccerMain {
 
         ObjectSet<Equipo> result = db.queryByExample(new Equipo(str, null, null));
 
-        while(result.hasNext()){
-            System.out.println(result.next().toStringEquipo());
+        if(!result.hasNext()){
+            try {
+                throw new Exception("\n...el equipo no existe o no tiene jugadores");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...elige opcion de menu:");
+            }
         }
+        else{
+            while(result.hasNext()){
+                System.out.println(result.next().toStringEquipo());
+            }
+        }
+
     }//jugadoresDeUnEquipoSolicitado
 
 
@@ -178,17 +175,33 @@ public class SoccerMain {
         System.out.println("Entra equipo 2:");
         String equipo2 = input.nextLine();
 
-        Query q = db.query();
-        q.constrain(new Equipo(equipo1, null, null));
-        ObjectSet<Equipo> result = q.execute();
-        System.out.println(result.next().toStringEquipo());
+        ObjectSet<Equipo> debuger1 = db.queryByExample(new Equipo(equipo1, null, null));
+        ObjectSet<Equipo> debuger2 = db.queryByExample(new Equipo(equipo2, null, null));
 
-        System.out.println("\n");
+        if(debuger1.hasNext() && debuger2.hasNext()){
+            Query q = db.query();
+            q.constrain(new Equipo(equipo1, null, null));
+            ObjectSet<Equipo> result = q.execute();
+            System.out.println(result.next().toStringEquipo());
 
-        Query q1 = db.query();
-        q1.constrain(new Equipo(equipo2, null, null));
-        ObjectSet<Equipo> result1 = q1.execute();
-        System.out.println(result1.next().toStringEquipo());
+            System.out.println("\n");
+
+            Query q1 = db.query();
+            q1.constrain(new Equipo(equipo2, null, null));
+            ObjectSet<Equipo> result1 = q1.execute();
+            System.out.println(result1.next().toStringEquipo());
+
+        }
+        else{
+            try {
+                throw new Exception("\n...los equipos no existen o no tienen jugadores");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...elige opcion de menu:");
+            }
+        }
+
+
     }//jugadoresSoda
 
 
@@ -197,17 +210,33 @@ public class SoccerMain {
         String equipo = input.nextLine();
 
         ObjectSet<Equipo> result = db.queryByExample(new Equipo(equipo, null, null));
-        List<Jugador> jugadores = result.get(0).getJugadores();
 
-        int i = 0;
-        while(i < jugadores.size()) {
-            if(jugadores.get(i).getCaracteristicas().getFuerza() <= 5){
-                System.out.print(jugadores.get(i).getNombre() + " fuerza: " +
-                        jugadores.get(i).getCaracteristicas().getFuerza() +"\n");
+        if(!result.hasNext()){
+            try {
+                throw new Exception("\n...el equipo no existe o no tiene jugadores");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...elige opcion de menu:");
             }
-
-            i++;
         }
+        else{
+            List<Jugador> jugadores = result.get(0).getJugadores();
+
+            int i = 0;
+            boolean flag = false;
+            while(i < jugadores.size()) {
+                if(jugadores.get(i).getCaracteristicas().getFuerza() <= 5){
+                    flag = true;
+                    System.out.print(jugadores.get(i).getNombre() + " fuerza: " +
+                            jugadores.get(i).getCaracteristicas().getFuerza() +"\n");
+                }
+
+                i++;
+            }
+            if(!flag)
+                System.out.println("...no hay jugadores con fuerza inferior o igual a 5");
+        }
+
     }//fuerza5
 
 
@@ -216,13 +245,35 @@ public class SoccerMain {
         String liga = input.nextLine();
 
         ObjectSet<Liga> result = db.queryByExample(new Liga(liga, 0, null));
-        List<Equipo> equipos = result.get(0).getEquipos();
 
-        int i = 0;
-        while(i < equipos.size()) {
-            System.out.println(equipos.get(i).toStringEquipoLiga());
-            i++;
+        if(!result.hasNext()){
+            try {
+                throw new Exception("...la liga no existe");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+            }
         }
+        else{
+            List<Equipo> equipos = result.get(0).getEquipos();
+
+            if(equipos.isEmpty()){
+                try {
+                    throw new Exception("...no hay equipos en esta liga");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("...entra opcion de menu");
+                }
+            }
+            else{
+                int i = 0;
+                while(i < equipos.size()) {
+                    System.out.println(equipos.get(i).toStringEquipoLiga());
+                    i++;
+                }
+            }
+        }
+
     }//jugadoresEnLiga
 
     private static void caractJugador(ObjectContainer db, Scanner input) {
