@@ -34,7 +34,6 @@ public class SoccerMain {
                 Jugador jugador4 = new Jugador("444444444", "Cuarto", "Apellido4", 1944);
                 Jugador jugador5 = new Jugador("555555555", "Quinto", "Apellido5", 1955);
 
-
                 //public Entrenador(String nombre, int anyosExperiencia)
                 Entrenador entrenadorBarza = new Entrenador("Luis Enrique", 20);
                 Entrenador entrenadorMandril = new Entrenador("Zidane", 3);
@@ -76,7 +75,8 @@ public class SoccerMain {
                 System.out.println("5--> Características de un jugador dado");
                 System.out.println("6--> Jugadores que pertenece a un entrenador dado");
                 System.out.println("7--> Equipos de una liga en concreta");
-                System.out.println("8--> Crear jugadores");
+                System.out.println("8--> Crear jugadores para Barça");
+                System.out.println("9--> Eliminar base de datos y salir");
                 System.out.println("0--> Salir del programa");
                 System.out.println(" ");
                 menu = input.nextLine();
@@ -127,6 +127,12 @@ public class SoccerMain {
                         break;
                     }
 
+                    case "9": {
+                        db.close();
+                        on = eliminarDB(file);
+                        break;
+                    }
+
                     default: {
                         System.out.println("\n...entrada de menu incorrecta\n");
                         break;
@@ -144,7 +150,6 @@ public class SoccerMain {
         }
 
     }//main
-
 
 
 
@@ -407,61 +412,74 @@ public class SoccerMain {
 
 
     private static void crearJugadores(ObjectContainer db, Scanner input) {
-        //Jugador(String dni, String nombre, String apellido, double altura)
-        System.out.println("Entra nombre de jugador:");
-        String nomJug = input.nextLine();
-        System.out.println("Entra apellido de jugador:");
-        String apellidoJug = input.nextLine();
-        System.out.println("Entra dni de jugador:");
-        String dniJug = input.nextLine();
-        String alturaJug = input.nextLine();
+        try{
+            //Jugador(String dni, String nombre, String apellido, double altura)
+            Scanner input2 = new Scanner(System.in);
+            Scanner input3 = new Scanner(System.in);
+            System.out.println("Entra nombre de jugador:");
+            String nomJug = input.nextLine();
+            System.out.println("Entra apellido de jugador:");
+            String apellidoJug = input.nextLine();
+            System.out.println("Entra dni de jugador:");
+            String dniJug = input2.nextLine();
+            System.out.println("Entra altura de jugador:");
+            String alturaJug = input.nextLine();
 
-        if(alturaJug.contains("[A-Z]") || alturaJug.contains("[a-z]")){
-            try {
-                throw new Exception("...altura debe ser un numero real");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("...entra opcion de menu");
+            if(alturaJug.contains("[A-Z]") || alturaJug.contains("[a-z]")){
+                try {
+                    throw new Exception("...altura debe ser un numero real");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("...entra opcion de menu");
+                }
             }
-        }
-        else{
+
             double altJug = Double.parseDouble(alturaJug);
 
-            try{
-                Jugador jugadorDeUsuario = new Jugador(dniJug, nomJug, apellidoJug, altJug);
-                Scanner inputInt = new Scanner(System.in);
-                System.out.println("Entra caracteristicas de " +
-                        nomJug + " " + apellidoJug + ":");
-                System.out.println("-Agilidad:");
-                int ag = inputInt.nextInt();
-                System.out.println("-Fuerza:");
-                int fz = inputInt.nextInt();
-                System.out.println("-Velocidad:");
-                int vel = inputInt.nextInt();
-                System.out.println("-Pase:");
-                int pas = inputInt.nextInt();
-                System.out.println("-Penalti:");
-                int pty = inputInt.nextInt();
+            Jugador jugadorDeUsuario = new Jugador(dniJug, nomJug, apellidoJug, altJug);
+            Scanner inputInt = new Scanner(System.in);
+            System.out.println("Entra caracteristicas de " +
+                    nomJug + " " + apellidoJug + ":");
+            System.out.println("-Agilidad:");
+            int ag = inputInt.nextInt();
+            System.out.println("-Fuerza:");
+            int fz = inputInt.nextInt();
+            System.out.println("-Velocidad:");
+            int vel = inputInt.nextInt();
+            System.out.println("-Pase:");
+            int pas = inputInt.nextInt();
+            System.out.println("-Penalti:");
+            int pty = inputInt.nextInt();
 
-                jugadorDeUsuario.getCaracteristicas().setAgilidad(ag);
-                jugadorDeUsuario.getCaracteristicas().setFuerza(fz);
-                jugadorDeUsuario.getCaracteristicas().setVelocidad(vel);
-                jugadorDeUsuario.getCaracteristicas().setPase(pas);
-                jugadorDeUsuario.getCaracteristicas().setPenalti(pty);
+            jugadorDeUsuario.getCaracteristicas().setAgilidad(ag);
+            jugadorDeUsuario.getCaracteristicas().setFuerza(fz);
+            jugadorDeUsuario.getCaracteristicas().setVelocidad(vel);
+            jugadorDeUsuario.getCaracteristicas().setPase(pas);
+            jugadorDeUsuario.getCaracteristicas().setPenalti(pty);
 
-                db.store(jugadorDeUsuario);
-                db.commit();
-                System.out.println("...jugador introducido");
+            db.store(jugadorDeUsuario);
 
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            ObjectSet<Equipo> result = db.queryByExample(new Equipo("Barça", null, null));
+            result.get(0).addJugador(jugadorDeUsuario);
+            db.commit();
+            System.out.println("...jugador introducido");
 
 
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
+    }
 
-
+    private static boolean eliminarDB(File file) {
+        boolean eraseDB = file.delete();
+        if(eraseDB){
+            System.out.println("...base de datos eliminada");
+            return false;
+        }
+        else
+            System.out.println("...no se ha eliminado la base de datos");
+        return true;
     }
 
 }//SoccerMain class
