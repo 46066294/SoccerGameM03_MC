@@ -41,7 +41,7 @@ public class SoccerMain {
 
                 //public Equipo(String nombre, String estado, Entrenador entrenador)
                 Equipo equipo1 = new Equipo("Barça", "Camp Nou", entrenadorBarza);
-                Equipo equipo2 = new Equipo("Mandril", "Bernabeu", entrenadorMandril);
+                Equipo equipo2 = new Equipo("Madrid", "Bernabeu", entrenadorMandril);
 
                 //public Liga(String nombre, int categoria, String patrocinador)
                 Liga liga1 = new Liga("1a Division", 1, "Telecinco");
@@ -84,7 +84,6 @@ public class SoccerMain {
                 switch (menu) {
                     case "0": {
                         System.out.println("\n...salir");
-                        //db.close();
                         on = false;
                         break;
                     }
@@ -121,6 +120,10 @@ public class SoccerMain {
 
                     case "7": {
                         equiposDeUnaLiga(db, input);
+                        break;
+
+                    }case "8": {
+                        crearJugadores(db, input);
                         break;
                     }
 
@@ -287,11 +290,13 @@ public class SoccerMain {
 
         int i = 0;
         int j = 0;
+        boolean flag = false;
         while(i < equipos.size()) {
             while (j < equipos.get(i).getJugadores().size()){
                 Jugador jugador = equipos.get(i).getJugadores().get(j);
                 if(jugador.getNombre().equalsIgnoreCase(nombre) &&
                         jugador.getApellido().equalsIgnoreCase(apellido)){
+                    flag = true;
                     System.out.println("Caracteristicas de " + jugador.getNombre() + " " +
                             jugador.getApellido());
                     System.out.println("\tagilidad: " + jugador.getCaracteristicas().getAgilidad());
@@ -305,6 +310,16 @@ public class SoccerMain {
             j = 0;
             i++;
         }
+
+        if(!flag ){
+            try {
+                throw new Exception("...no hay jugadores en la base de datos");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+
+            }
+        }
     }//caractJugador
 
 
@@ -315,16 +330,37 @@ public class SoccerMain {
         ObjectSet<Equipo> result = db.queryByExample(Equipo.class);
 
         int equipos = result.size();
+
+        if(equipos == 0){
+            try {
+                throw new Exception("...no hay equipos en la base de datos");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+            }
+        }
+
+        boolean flag = false;
         for(int k = 0; k < equipos; k++){
             if(result.get(k).getEntrenador().getNombre().equalsIgnoreCase(entrenador)){
                 System.out.println("Entrenador: " + result.get(k).getEntrenador().getNombre());
                 System.out.println("Jugadores:\n");
                 List<Jugador> jugadores = result.get(k).getJugadores();
                 for(int i = 0; i < jugadores.size(); i++){
+                    flag = true;
                     System.out.println(jugadores.get(i).getNombre() + " " +
                             jugadores.get(i).getApellido());
                 }
                 break;
+            }
+        }
+
+        if(!flag){
+            try {
+                throw new Exception("...no hay jugadores en la base de datos");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
             }
         }
     }//jugadoresPertenecenEntrenador
@@ -336,8 +372,19 @@ public class SoccerMain {
 
         ObjectSet<Liga> result = db.queryByExample(Liga.class);
 
+        if(!result.hasNext()){
+            try {
+                throw new Exception("...no hay ligas en la base de datos");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+            }
+        }
+
+        boolean flag = false;
         for(int j = 0; j < result.size(); j++){
             if(liga.equalsIgnoreCase(result.get(j).getNombre())){
+                flag = true;
                 int cantidadEquipos = result.get(0).getEquipos().size();
                 List<Equipo> equipos = result.get(0).getEquipos();
                 System.out.println("Equipos:");
@@ -347,6 +394,74 @@ public class SoccerMain {
                 }
             }
         }
+
+        if(!flag){
+            try {
+                throw new Exception("...no hay jugadores en la base de datos");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+            }
+        }
     }//equiposDeUnaLiga
+
+
+    private static void crearJugadores(ObjectContainer db, Scanner input) {
+        //Jugador(String dni, String nombre, String apellido, double altura)
+        System.out.println("Entra nombre de jugador:");
+        String nomJug = input.nextLine();
+        System.out.println("Entra apellido de jugador:");
+        String apellidoJug = input.nextLine();
+        System.out.println("Entra dni de jugador:");
+        String dniJug = input.nextLine();
+        String alturaJug = input.nextLine();
+
+        if(alturaJug.contains("[A-Z]") || alturaJug.contains("[a-z]")){
+            try {
+                throw new Exception("...altura debe ser un numero real");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("...entra opcion de menu");
+            }
+        }
+        else{
+            double altJug = Double.parseDouble(alturaJug);
+
+            try{
+                Jugador jugadorDeUsuario = new Jugador(dniJug, nomJug, apellidoJug, altJug);
+                Scanner inputInt = new Scanner(System.in);
+                System.out.println("Entra caracteristicas de " +
+                        nomJug + " " + apellidoJug + ":");
+                System.out.println("-Agilidad:");
+                int ag = inputInt.nextInt();
+                System.out.println("-Fuerza:");
+                int fz = inputInt.nextInt();
+                System.out.println("-Velocidad:");
+                int vel = inputInt.nextInt();
+                System.out.println("-Pase:");
+                int pas = inputInt.nextInt();
+                System.out.println("-Penalti:");
+                int pty = inputInt.nextInt();
+
+                jugadorDeUsuario.getCaracteristicas().setAgilidad(ag);
+                jugadorDeUsuario.getCaracteristicas().setFuerza(fz);
+                jugadorDeUsuario.getCaracteristicas().setVelocidad(vel);
+                jugadorDeUsuario.getCaracteristicas().setPase(pas);
+                jugadorDeUsuario.getCaracteristicas().setPenalti(pty);
+
+                db.store(jugadorDeUsuario);
+                db.commit();
+                System.out.println("...jugador introducido");
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+
+    }
 
 }//SoccerMain class
