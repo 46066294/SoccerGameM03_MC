@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/**Clase que representa un equipo de futbol
  * Created by Mat on 22/02/2016.
  */
 public class Equipo {
@@ -10,9 +10,17 @@ public class Equipo {
     private String estadio = "";
     private List<Jugador> jugadores;
     private Entrenador entrenador;
+    private Liga liga = null;
 
-    public void cambioLiga(){
+    public void cambioLiga(int indexActual, Liga nuevaliga){
+        liga.seRetiraEquipo(indexActual);
+        setLiga(nuevaliga);
+        nuevaliga.addEquipo(this);
+    }
 
+    public void seRetiraJugador(int index) {
+        jugadores.get(index).setEquipo(null);
+        jugadores.remove(index);
     }
 
     public void addJugador(Jugador e){
@@ -83,4 +91,6 @@ public class Equipo {
         }
         return jug;
     }
+
+    public void setLiga(Liga liga) { this.liga = liga; }
 }

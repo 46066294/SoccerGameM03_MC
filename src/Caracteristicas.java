@@ -1,4 +1,4 @@
-/**
+/**Clase que representa las caracteristicas de un jugador
  * Created by Mat on 22/02/2016.
  */
 public class Caracteristicas {
@@ -9,10 +9,22 @@ public class Caracteristicas {
     private int pase;
     private int penalti;
 
-    /*
-    public boolean aumentarCaracteristicas(){
-        return ;
-    }*/
+    public boolean aumentarCaracterística(int agilidad, int fuerza, int velocidad, int pase, int penalti){
+
+        if ((this.agilidad += agilidad) > 10 || (this.fuerza += fuerza) > 10 || (this.velocidad += velocidad)> 10
+                || (this.pase += pase)> 10 || (this.penalti += penalti)> 10){
+            System.out.println("Aumento superior a 10 no está permitido");
+            return false;
+        } else {
+            this.agilidad += agilidad;
+            this.fuerza += fuerza;
+            this.velocidad += velocidad;
+            this.pase += pase;
+            this.penalti += penalti;
+
+            return true;
+        }
+    }
 
     //constr
     public Caracteristicas(){}

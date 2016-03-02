@@ -6,11 +6,35 @@ import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
-/**
+/**Programa que gestiona una base de datos orientada
+ * a objetos con nombre soccerData.db
+ * Funcionalidades y consultas:
+ *
+ * 1--> Jugadores de un equipo solicitado
+ * 2--> Jugadores de dos equipos solicitados utilizando una consulta SODA
+ * 3--> Los jugadores de un equipo que tenga una Fuerza menor o igual que 5
+ * 4--> Jugadores pertenecientes a una Liga
+ * 5--> Características de un jugador dado
+ * 6--> Jugadores que pertenece a un entrenador dado
+ * 7--> Equipos de una liga en concreta
+ * 8--> Crear jugadores para Barça
+ * 9--> Eliminar base de datos y salir
+ * 10--> Visualizar equipos
+ * 11--> About
+ * 0--> Salir del programa
+ *
  * Created by Mat on 23/02/2016.
  */
 public class SoccerMain {
+
     public static void main(String[] args) throws Exception {
+        ejecucion1();
+    }//main
+
+    /**
+     * Logica y gestion del programa
+     */
+    private static void ejecucion1(){
         System.out.println("EjerciciosM03 ::Marc Cano:: db4o");
         Scanner input = new Scanner(System.in);
 
@@ -27,22 +51,18 @@ public class SoccerMain {
 
             //Los siguientes datos solo se crearan una vez
             if(file.length() < 1500){
-                //public Jugador(String dni, String nombre, String apellido, double altura)
                 Jugador jugador1 = new Jugador("12345678Q", "Primero", "Apellido1", 2000);
                 Jugador jugador2 = new Jugador("87654321A", "Segundo", "Apellido2", 1950);
                 Jugador jugador3 = new Jugador("3333333", "Tercero", "Apellido3", 1833);
                 Jugador jugador4 = new Jugador("444444444", "Cuarto", "Apellido4", 1944);
                 Jugador jugador5 = new Jugador("555555555", "Quinto", "Apellido5", 1955);
 
-                //public Entrenador(String nombre, int anyosExperiencia)
                 Entrenador entrenadorBarza = new Entrenador("Luis Enrique", 20);
                 Entrenador entrenadorMandril = new Entrenador("Zidane", 3);
 
-                //public Equipo(String nombre, String estado, Entrenador entrenador)
                 Equipo equipo1 = new Equipo("Barça", "Camp Nou", entrenadorBarza);
                 Equipo equipo2 = new Equipo("Madrid", "Bernabeu", entrenadorMandril);
 
-                //public Liga(String nombre, int categoria, String patrocinador)
                 Liga liga1 = new Liga("1a Division", 1, "Telecinco");
                 Liga liga2 = new Liga("2a Division", 2, "tve2");
 
@@ -68,16 +88,18 @@ public class SoccerMain {
             while (on) {
                 System.out.println("\n");
                 System.out.println("MENU:");
-                System.out.println("1--> Jugadores de un equipo solicitado");
-                System.out.println("2--> Jugadores de dos equipos solicitados utilizando una consulta SODA");
-                System.out.println("3--> Los jugadores de un equipo que tenga una Fuerza menor o igual que 5");
-                System.out.println("4--> Jugadores pertenecientes a una Liga");
-                System.out.println("5--> Características de un jugador dado");
-                System.out.println("6--> Jugadores que pertenece a un entrenador dado");
-                System.out.println("7--> Equipos de una liga en concreta");
-                System.out.println("8--> Crear jugadores para Barça");
-                System.out.println("9--> Eliminar base de datos y salir");
-                System.out.println("0--> Salir del programa");
+                System.out.println(" 1--> Jugadores de un equipo solicitado");
+                System.out.println(" 2--> Jugadores de dos equipos solicitados utilizando una consulta SODA");
+                System.out.println(" 3--> Los jugadores de un equipo que tenga una Fuerza menor o igual que 5");
+                System.out.println(" 4--> Jugadores pertenecientes a una Liga");
+                System.out.println(" 5--> Características de un jugador dado");
+                System.out.println(" 6--> Jugadores que pertenece a un entrenador dado");
+                System.out.println(" 7--> Equipos de una liga en concreta");
+                System.out.println(" 8--> Crear jugadores para Barça");
+                System.out.println(" 9--> Eliminar base de datos y salir");
+                System.out.println("10--> Visualizar equipos");
+                System.out.println("11--> About");
+                System.out.println(" 0--> Salir del programa");
                 System.out.println(" ");
                 menu = input.nextLine();
 
@@ -133,6 +155,16 @@ public class SoccerMain {
                         break;
                     }
 
+                    case "10": {
+                        visualizarEquipos(db);
+                        break;
+                    }
+
+                    case "11": {
+                        about();
+                        break;
+                    }
+
                     default: {
                         System.out.println("\n...entrada de menu incorrecta\n");
                         break;
@@ -148,11 +180,29 @@ public class SoccerMain {
             db.close();
             input.close();
         }
+    }
 
-    }//main
+    /**
+     * Documento de informacion al profesor
+     */
+    private static void about() {
+        System.out.println("INFO :: EjerciciosM03 ::Marc Cano:: db4o" +
+                "\n-El programa carga, (solo una vez) unos datos por defecto para poder manipular " +
+                "\nla aplicación desde el inicio de su ejecución." +
+                "\n\n-El desarrollo del ejercicio trata de ajustarse lo maximo posible " +
+                "\nal enunciado del mismo." +
+                "\n\n-Existen metodos desarrollados, que no se usan. Eso es debido a que " +
+                "\nen el resultado del ejercicio, no se pide su ejecucion y tampoco hay " +
+                "\nnecesidad de implementar dichos metodoss para realizar las consultas requeridas." +
+                "\n\n-El hecho de crear un jugador se ha desarrollado con la intencion " +
+                "\nde demostrar que se sabe crear un jugador (opcion 8).");
+    }
 
-
-
+    /**
+     * Consulta los jugadores que hay en un equipo solicitado
+     * @param db database
+     * @param input
+     */
     private static void jugadoresDeUnEquipoSolicitado(ObjectContainer db, Scanner input) {
         System.out.println("Elige equipo:\n");
         String str = input.nextLine();
@@ -176,6 +226,11 @@ public class SoccerMain {
     }//jugadoresDeUnEquipoSolicitado
 
 
+    /**
+     * Consulta Jugadores de dos equipos solicitados utilizando una consulta SODA
+     * @param db Database
+     * @param input
+     */
     private static void jugadoresSoda(ObjectContainer db, Scanner input) {
         System.out.println("Entra equipo 1:");
         String equipo1 = input.nextLine();
@@ -213,6 +268,11 @@ public class SoccerMain {
     }//jugadoresSoda
 
 
+    /**
+     * Consulta Los jugadores de un equipo que tenga una Fuerza menor o igual que 5
+     * @param db Database
+     * @param input
+     */
     private static void fuerza5(ObjectContainer db, Scanner input) {
         System.out.println("Entra equipo:");
         String equipo = input.nextLine();
@@ -248,6 +308,11 @@ public class SoccerMain {
     }//fuerza5
 
 
+    /**
+     * Consulta Jugadores pertenecientes a una Liga dada
+     * @param db Database
+     * @param input
+     */
     private static void jugadoresEnLiga(ObjectContainer db, Scanner input) {
         System.out.println("Entra liga:");
         String liga = input.nextLine();
@@ -284,6 +349,11 @@ public class SoccerMain {
 
     }//jugadoresEnLiga
 
+    /**
+     * Consulta las Características de un jugador dado
+     * @param db Database
+     * @param input
+     */
     private static void caractJugador(ObjectContainer db, Scanner input) {
         System.out.println("Entra nombre del Jugador:");
         String nombre = input.nextLine();
@@ -328,6 +398,11 @@ public class SoccerMain {
     }//caractJugador
 
 
+    /**
+     * Consulta Jugadores que pertenecen a un entrenador dado
+     * @param db Database
+     * @param input
+     */
     private static void jugadoresPertenecenEntrenador(ObjectContainer db, Scanner input) {
         System.out.println("Entra nombre del Entrenador:");
         String entrenador = input.nextLine();
@@ -371,6 +446,11 @@ public class SoccerMain {
     }//jugadoresPertenecenEntrenador
 
 
+    /**
+     * Consulta Equipos de una liga en concreta
+     * @param db Database
+     * @param input
+     */
     private static void equiposDeUnaLiga(ObjectContainer db, Scanner input) {
         System.out.println("Entra nombre de la Liga:");
         String liga = input.nextLine();
@@ -411,6 +491,11 @@ public class SoccerMain {
     }//equiposDeUnaLiga
 
 
+    /**
+     * Crea jugadores para Barça
+     * @param db Database
+     * @param input
+     */
     private static void crearJugadores(ObjectContainer db, Scanner input) {
         try{
             //Jugador(String dni, String nombre, String apellido, double altura)
@@ -471,6 +556,12 @@ public class SoccerMain {
 
     }
 
+    /**
+     * Elimina el archivo soccerData.db que contiene
+     * todos los datos creados asta el momento
+     * @param file archivo que contiene la base de datos
+     * @return true = eliminado
+     */
     private static boolean eliminarDB(File file) {
         boolean eraseDB = file.delete();
         if(eraseDB){
@@ -480,6 +571,21 @@ public class SoccerMain {
         else
             System.out.println("...no se ha eliminado la base de datos");
         return true;
+    }
+
+    /**
+     * Visualiza todos los equipos de la base de datos
+     * @param db Database
+     */
+    private static void visualizarEquipos(ObjectContainer db) {
+        ObjectSet<Equipo> result = db.queryByExample(Equipo.class);
+        System.out.println("\nEquipos:");
+        int i = 0;
+        while(result.hasNext()){
+            System.out.println("\t- " + result.get(i).getNombre());
+            i++;
+        }
+
     }
 
 }//SoccerMain class

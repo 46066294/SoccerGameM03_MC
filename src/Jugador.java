@@ -1,4 +1,4 @@
-/**
+/**Clase que representa un jugador de futbol
  * Created by Mat on 22/02/2016.
  */
 public class Jugador {
@@ -8,14 +8,13 @@ public class Jugador {
     private String apellido = "";
     private double altura = 0.0;
     private Caracteristicas caracteristicas;
+    private Equipo equipo;
 
 
-    public void seRetira(){
-
-    }
-
-    public void traspaso(){
-
+    public void traspaso(int indexActual, Equipo nuevoEquipo){
+        equipo.seRetiraJugador(indexActual);
+        setEquipo(nuevoEquipo);
+        nuevoEquipo.addJugador(this);
     }
 
     //constr
@@ -70,6 +69,14 @@ public class Jugador {
 
     public void setCaracteristicas(Caracteristicas caracteristicas) {
         this.caracteristicas = caracteristicas;
+    }
+
+    public Equipo getEquipo() {
+        return equipo;
+    }
+
+    public void setEquipo(Equipo equipo) {
+        this.equipo = equipo;
     }
 
 

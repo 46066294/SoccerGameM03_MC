@@ -2,7 +2,9 @@ import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.config.EmbeddedConfiguration;
 
-/**
+/**Clase con la que nos conectaremos a la BDOO
+ * Solo se creara una instancia de la base de datos
+ * para gestionarla mejor
  * Created by Mat on 24/02/2016.
  */
 public class DataConnection {

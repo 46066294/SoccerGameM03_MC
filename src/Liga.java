@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/**Clase que representa una Liga de futbol
+ * con sus equipos
  * Created by Mat on 22/02/2016.
  */
 public class Liga {
@@ -11,8 +12,13 @@ public class Liga {
     private String patrocinador = "";
     private List<Equipo> equipos;
 
-    public void cambioPatrocinador(){
+    public void cambioPatrocinador(Liga liga, String patrocinador){
+        liga.setPatrocinador(patrocinador);
+    }
 
+    public void seRetiraEquipo (int index) {
+        equipos.get(index).setLiga(null);
+        equipos.remove(index);
     }
 
     //constr
